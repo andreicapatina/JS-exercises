@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>BMI calculator</title>
+    <style>
+        main {
+            width: 300px;
+            margin: auto;
+            margin-top: 10vh;
+        }
+
+        #bmiForm {
+            margin-top: 30px;
+        }
+
+        #result {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="btn-group" role="group" aria-label="Calculator mode">
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="btnradio1">Calculate BMI</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnradio2">Compare BMI of 2 persons</label>
+        </div>
+
+        <form id="bmiForm" class="card p-3 bg-light">
+            <div class="mb-3">
+                <label for="height1" class="form-label">Height (in meters)</label>
+                <input type="text" class="form-control" id="height1" aria-describedby="heightHelp" placeholder="e.g., 1.75">
+            </div>
+            <div class="mb-3">
+                <label for="weight1" class="form-label">Weight (in kilograms)</label>
+                <input type="text" class="form-control" id="weight1" placeholder="e.g., 70">
+            </div>
+
+            <div id="secondPersonFields" style="display: none;">
+                <div class="mb-3">
+                    <label for="height2" class="form-label">Height of Person 2 (in meters)</label>
+                    <input type="text" class="form-control" id="height2" placeholder="e.g., 1.80">
+                </div>
+                <div class="mb-3">
+                    <label for="weight2" class="form-label">Weight of Person 2 (in kilograms)</label>
+                    <input type="text" class="form-control" id="weight2" placeholder="e.g., 75">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Calculate</button>
+        </form> 
+        <div class="mt-3">
+            <div id="result" class="alert alert-info" role="alert"></div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle between single and double person BMI calculation
+        function resetFormAndResult() {
+            document.getElementById('bmiForm').reset();  // Reset all input fields
+            document.getElementById('result').style.display = 'none';  // Hide the result container
+        }
+
+        document.getElementById('btnradio1').addEventListener('change', function() {
+            document.getElementById('secondPersonFields').style.display = 'none';
+            resetFormAndResult();
+        });
+
+        document.getElementById('btnradio2').addEventListener('change', function() {
+            document.getElementById('secondPersonFields').style.display = 'block';
+            resetFormAndResult();
+        });
+
+        document.getElementById('bmiForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get first person's height and weight values
+            const height1 = parseFloat(document.getElementById('height1').value);
+            const weight1 = parseFloat(document.getElementById('weight1').value);
+
+            if (isNaN(height1) || isNaN(weight1)) {
+                alert('Please enter valid numbers for height and weight.');
+                return;
+            }
+
+            const bmi1 = weight1 / (height1 * height1);
+
+            const resultElement = document.getElementById('result');
+            resultElement.style.display = 'block';  // Show the result container
+
+            if (document.getElementById('btnradio2').checked) {
+                // Get second person's height and weight values
+                const height2 = parseFloat(document.getElementById('height2').value);
+                const weight2 = parseFloat(document.getElementById('weight2').value);
+
+                if (isNaN(height2) || isNaN(weight2)) {
+                    alert('Please enter valid numbers for the second person\'s height and weight.');
+                    return;
+                }
+
+                const bmi2 = weight2 / (height2 * height2);
+
+                // Display comparison result
+                let resultText = `<strong>Person 1's BMI:</strong> ${bmi1.toFixed(2)}<br>`;
+                resultText += `<strong>Person 2's BMI:</strong> ${bmi2.toFixed(2)}<br>`;
+
+                if (bmi1 > bmi2) {
+                    resultText += '<span class="text-success">Person 1 has a higher BMI.</span>';
+                } else if (bmi1 < bmi2) {
+                    resultText += '<span class="text-success">Person 2 has a higher BMI.</span>';
+                } else {
+                    resultText += '<span class="text-primary">Both persons have the same BMI.</span>';
+                }
+
+                resultElement.innerHTML = resultText;
+                resultElement.className = 'alert alert-info';  // Reset the alert style
+            } else {
+                // Display single BMI result
+                const resultText = `<strong>Your BMI is ${bmi1.toFixed(2)}</strong>`;
+                resultElement.innerHTML = resultText;
+                resultElement.className = 'alert alert-success';  // Change the alert style to success
+            }
+        });
+    </script>
+</body>
+</html>
